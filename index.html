@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>브루마블 - Blue Marble</title>
+    <title>부루마블 - Blue Marble</title>
     <style>
         * {
             margin: 0;
@@ -37,18 +37,52 @@
             font-size: 32px;
         }
 
+        .game-info {
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .notification-banner {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 50px;
+            border-radius: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            z-index: 9999;
+            animation: notificationPop 2s ease-in-out forwards;
+            text-align: center;
+            max-width: 80%;
+            word-break: keep-all;
+        }
+
+        @keyframes notificationPop {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            10% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+            15% { transform: translate(-50%, -50%) scale(1); }
+            85% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+        }
+
         .game-board {
             position: relative;
             width: 100%;
-            max-width: 700px;
+            max-width: 750px;
             aspect-ratio: 1;
             margin: 0 auto 20px;
             background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
             border-radius: 15px;
             box-shadow: inset 0 5px 15px rgba(0,0,0,0.1);
             display: grid;
-            grid-template-columns: repeat(11, 1fr);
-            grid-template-rows: repeat(11, 1fr);
+            grid-template-columns: repeat(13, 1fr);
+            grid-template-rows: repeat(13, 1fr);
             gap: 0;
             padding: 10px;
         }
@@ -60,21 +94,35 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            font-size: 10px;
-            padding: 3px;
+            font-size: 9px;
+            padding: 2px;
             position: relative;
             transition: all 0.3s;
             box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+            aspect-ratio: 1;
         }
 
         .cell:hover {
-            transform: translateY(-3px);
+            transform: translateY(-2px) scale(1.02);
             box-shadow: 3px 3px 10px rgba(0,0,0,0.2);
+            z-index: 10;
         }
 
         .cell.corner {
             font-weight: bold;
             background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+            color: white;
+            font-size: 10px;
+        }
+
+        .cell.special {
+            background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+            color: white;
+            font-weight: bold;
+        }
+
+        .cell.golden {
+            background: linear-gradient(135deg, #f9d423 0%, #ff4e50 100%);
             color: white;
         }
 
@@ -85,11 +133,11 @@
         .cell-name {
             font-weight: bold;
             text-align: center;
-            margin-bottom: 2px;
+            margin-bottom: 1px;
         }
 
         .cell-price {
-            font-size: 8px;
+            font-size: 7px;
             color: #666;
         }
 
@@ -97,30 +145,77 @@
             position: absolute;
             top: 2px;
             right: 2px;
-            width: 12px;
-            height: 12px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
             border: 2px solid white;
         }
 
         .building-indicator {
             display: flex;
-            gap: 2px;
-            margin-top: 2px;
+            gap: 1px;
+            margin-top: 1px;
+            min-height: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
         .building {
             width: 8px;
             height: 8px;
-            background: #ff6b6b;
             border-radius: 2px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            animation: buildingPop 0.3s ease-out;
         }
 
-        .hotel {
-            width: 10px;
-            height: 10px;
-            background: gold;
-            border-radius: 2px;
+        .building.villa {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+        }
+
+        .building.building-type {
+            background: linear-gradient(135deg, #a29bfe, #6c5ce7);
+        }
+
+        .building.hotel {
+            background: linear-gradient(135deg, #fd79a8, #e84393);
+        }
+
+        .landmark {
+            width: 12px;
+            height: 12px;
+            background: linear-gradient(135deg, #f9d423, #ff4e50);
+            border-radius: 3px;
+            box-shadow: 0 2px 6px rgba(255, 215, 0, 0.8);
+            animation: landmarkPulse 1.5s ease-in-out infinite;
+            position: relative;
+            font-size: 8px;
+        }
+
+        .landmark::before {
+            content: '⭐';
+            position: absolute;
+            top: -3px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+        }
+
+        .olympic-marker {
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            font-size: 10px;
+        }
+
+        @keyframes buildingPop {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes landmarkPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
         }
 
         .players {
@@ -128,56 +223,57 @@
             bottom: 2px;
             left: 2px;
             display: flex;
-            gap: 2px;
+            gap: 1px;
+            flex-wrap: wrap;
         }
 
         .player-piece {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            border: 2px solid white;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+            border: 3px solid white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+            transition: all 0.3s;
         }
 
         .center-area {
-            grid-column: 2 / 11;
-            grid-row: 2 / 11;
+            grid-column: 2 / 13;
+            grid-row: 2 / 13;
             background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
             border-radius: 10px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 15px;
         }
 
         .game-title {
-            font-size: 36px;
+            font-size: 28px;
             font-weight: bold;
             color: white;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .dice-container {
             display: flex;
-            gap: 15px;
-            margin: 20px 0;
+            gap: 12px;
+            margin: 15px 0;
         }
 
         .dice {
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             background: white;
-            border-radius: 10px;
+            border-radius: 8px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 32px;
+            font-size: 28px;
             font-weight: bold;
             color: #667eea;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            transition: transform 0.3s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
 
         .dice.rolling {
@@ -192,21 +288,21 @@
         }
 
         .roll-button {
-            padding: 15px 40px;
+            padding: 12px 35px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 30px;
-            font-size: 18px;
+            border-radius: 25px;
+            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
 
-        .roll-button:hover {
+        .roll-button:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 7px 20px rgba(0,0,0,0.3);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.3);
         }
 
         .roll-button:disabled {
@@ -217,66 +313,71 @@
         .player-info {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-top: 20px;
+            gap: 12px;
+            margin-top: 15px;
         }
 
         .player-card {
             background: white;
-            padding: 15px;
+            padding: 12px;
             border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         .player-card.active {
             border: 3px solid #667eea;
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        .player-card.bankrupt {
+            opacity: 0.5;
+            background: #f0f0f0;
         }
 
         .player-header {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
+            gap: 8px;
+            margin-bottom: 8px;
         }
 
         .player-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            border: 2px solid #333;
+            width: 22px;
+            height: 22px;
+            border-radius: 3px;
+            border: 3px solid #333;
         }
 
         .player-name {
             font-weight: bold;
-            font-size: 16px;
+            font-size: 15px;
         }
 
         .player-money {
             color: #27ae60;
             font-weight: bold;
-            font-size: 18px;
+            font-size: 16px;
         }
 
         .player-properties {
-            font-size: 12px;
+            font-size: 11px;
             color: #666;
-            margin-top: 5px;
+            margin-top: 4px;
         }
 
         .log-container {
-            margin-top: 20px;
-            max-height: 150px;
+            margin-top: 15px;
+            max-height: 130px;
             overflow-y: auto;
             background: #f8f9fa;
-            padding: 15px;
+            padding: 12px;
             border-radius: 10px;
         }
 
         .log-entry {
-            padding: 5px 0;
+            padding: 4px 0;
             border-bottom: 1px solid #dee2e6;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .modal {
@@ -298,222 +399,316 @@
 
         .modal-content {
             background: white;
-            padding: 30px;
+            padding: 25px;
             border-radius: 15px;
-            max-width: 400px;
+            max-width: 450px;
             width: 90%;
             text-align: center;
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
         .modal-buttons {
             display: flex;
-            gap: 10px;
-            margin-top: 20px;
+            gap: 8px;
+            margin-top: 15px;
             justify-content: center;
+            flex-wrap: wrap;
         }
 
         .modal-button {
-            padding: 10px 30px;
+            padding: 10px 25px;
             border: none;
             border-radius: 20px;
-            font-size: 16px;
+            font-size: 14px;
             cursor: pointer;
             transition: all 0.3s;
         }
 
-        .btn-buy {
-            background: #27ae60;
-            color: white;
+        .btn-buy { background: #27ae60; color: white; }
+        .btn-pass { background: #95a5a6; color: white; }
+        .btn-build { background: #e74c3c; color: white; }
+        .btn-sell { background: #e67e22; color: white; }
+
+        .property-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 10px 0;
         }
 
-        .btn-pass {
-            background: #95a5a6;
-            color: white;
+        .property-item {
+            padding: 8px;
+            margin: 5px 0;
+            background: #f8f9fa;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
-        .btn-build {
-            background: #e74c3c;
-            color: white;
+        .property-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .landmark-effect {
+            position: fixed;
+            pointer-events: none;
+            font-size: 40px;
+            animation: landmarkEffect 2s ease-out forwards;
+            z-index: 9999;
+        }
+
+        @keyframes landmarkEffect {
+            0% { transform: scale(0) rotate(0deg); opacity: 1; }
+            50% { transform: scale(1.5) rotate(180deg); opacity: 1; }
+            100% { transform: scale(2) rotate(360deg); opacity: 0; }
         }
     </style>
 </head>
 <body>
     <div class="game-container">
-        <h1>🌍 브루마블 (Blue Marble)</h1>
+        <h1>🌍 부루마블 (Blue Marble)</h1>
+        <div class="game-info">턴: <span id="turnCount">1</span> / 100 | 바퀴: <span id="lapCount">0</span></div>
         
         <div class="game-board" id="gameBoard">
             <div class="center-area">
-                <div class="game-title">BLUE<br>MARBLE</div>
+                <div class="game-title">부루마블</div>
                 <div class="dice-container">
                     <div class="dice" id="dice1">6</div>
                     <div class="dice" id="dice2">6</div>
                 </div>
                 <button class="roll-button" id="rollButton">주사위 굴리기</button>
-                <div id="currentTurn" style="margin-top: 15px; font-size: 16px; font-weight: bold; color: white;">턴: 나</div>
+                <div id="currentTurn" style="margin-top: 10px; font-size: 14px; font-weight: bold; color: white;">턴: 나</div>
             </div>
         </div>
 
         <div class="player-info" id="playerInfo"></div>
-        
         <div class="log-container" id="logContainer"></div>
     </div>
 
     <div class="modal" id="actionModal">
         <div class="modal-content">
-            <h2 id="modalTitle">도시 구매</h2>
+            <h2 id="modalTitle">알림</h2>
             <p id="modalText"></p>
+            <div id="modalExtra"></div>
             <div class="modal-buttons" id="modalButtons"></div>
         </div>
     </div>
 
     <script>
-        const cities = [
-            '출발', '타이베이', '베이징', '마닐라', '제주도', '싱가포르', '카이로', '무인도',
-            '이스탄불', '아테네', '코펜하겐', '스톡홀름', '베른', '베를린', '오타와', '비행기',
-            '부에노스', '상파울로', '시드니', '하와이', '런던', '파리', '로마', '월급',
-            '뉴욕', '도쿄', '서울', '모스크바', '두바이', '제네바', '뭄바이', '출발'
+        const boardLayout = [
+            '출발', '타이페이', '황금열쇠', '베이징', '마닐라', '제주도', '싱가포르', '황금열쇠', '카이로', '이스탄불',
+            '무인도', '아테네', '황금열쇠', '코펜하겐', '스톡홀름', '콩코드', '베른', '황금열쇠', '베를린', '오타와',
+            '올림픽', '부에노스', '황금열쇠', '상파울루', '시드니', '부산', '하와이', '리스본', '퀸엘리자베스', '마드리드',
+            '비행기', '도쿄', '컬럼비아', '파리', '로마', '황금열쇠', '런던', '뉴욕', '황금열쇠', '서울'
         ];
 
-        const cityPrices = {
-            '타이베이': 50000, '베이징': 80000, '마닐라': 50000, '제주도': 100000,
-            '싱가포르': 100000, '카이로': 100000, '이스탄불': 150000, '아테네': 150000,
-            '코펜하겐': 200000, '스톡홀름': 200000, '베른': 200000, '베를린': 200000,
-            '오타와': 250000, '부에노스': 250000, '상파울로': 300000, '시드니': 300000,
-            '하와이': 350000, '런던': 350000, '파리': 500000, '로마': 500000,
-            '뉴욕': 800000, '도쿄': 1000000, '서울': 1000000, '모스크바': 800000,
-            '두바이': 600000, '제네바': 600000, '뭄바이': 400000
+        const cityData = {
+            '타이페이': { land: 50000, villa: 50000, building: 150000, hotel: 250000, rentLand: 2000, rentVilla: 10000, rentBuilding: 90000, rentHotel: 250000 },
+            '베이징': { land: 80000, villa: 50000, building: 150000, hotel: 250000, rentLand: 4000, rentVilla: 20000, rentBuilding: 180000, rentHotel: 450000 },
+            '마닐라': { land: 80000, villa: 50000, building: 150000, hotel: 250000, rentLand: 4000, rentVilla: 20000, rentBuilding: 180000, rentHotel: 450000 },
+            '제주도': { land: 200000, special: true, rent: 300000 },
+            '싱가포르': { land: 100000, villa: 50000, building: 150000, hotel: 250000, rentLand: 6000, rentVilla: 30000, rentBuilding: 270000, rentHotel: 550000 },
+            '카이로': { land: 100000, villa: 50000, building: 150000, hotel: 250000, rentLand: 6000, rentVilla: 30000, rentBuilding: 270000, rentHotel: 550000 },
+            '이스탄불': { land: 120000, villa: 50000, building: 150000, hotel: 250000, rentLand: 8000, rentVilla: 40000, rentBuilding: 300000, rentHotel: 600000 },
+            '아테네': { land: 140000, villa: 100000, building: 300000, hotel: 500000, rentLand: 10000, rentVilla: 150000, rentBuilding: 450000, rentHotel: 750000 },
+            '코펜하겐': { land: 160000, villa: 100000, building: 300000, hotel: 500000, rentLand: 12000, rentVilla: 180000, rentBuilding: 500000, rentHotel: 900000 },
+            '스톡홀름': { land: 160000, villa: 100000, building: 300000, hotel: 500000, rentLand: 12000, rentVilla: 180000, rentBuilding: 500000, rentHotel: 900000 },
+            '콩코드': { land: 200000, special: true, rent: 300000 },
+            '베른': { land: 180000, villa: 100000, building: 300000, hotel: 500000, rentLand: 14000, rentVilla: 200000, rentBuilding: 550000, rentHotel: 950000 },
+            '베를린': { land: 180000, villa: 100000, building: 300000, hotel: 500000, rentLand: 14000, rentVilla: 200000, rentBuilding: 550000, rentHotel: 950000 },
+            '오타와': { land: 200000, villa: 100000, building: 300000, hotel: 500000, rentLand: 16000, rentVilla: 220000, rentBuilding: 600000, rentHotel: 1000000 },
+            '부에노스': { land: 220000, villa: 150000, building: 400000, hotel: 750000, rentLand: 18000, rentVilla: 250000, rentBuilding: 700000, rentHotel: 1050000 },
+            '상파울루': { land: 240000, villa: 150000, building: 450000, hotel: 750000, rentLand: 20000, rentVilla: 300000, rentBuilding: 750000, rentHotel: 1100000 },
+            '시드니': { land: 240000, villa: 150000, building: 450000, hotel: 750000, rentLand: 20000, rentVilla: 300000, rentBuilding: 750000, rentHotel: 1100000 },
+            '부산': { land: 500000, special: true, rent: 600000 },
+            '하와이': { land: 260000, villa: 150000, building: 450000, hotel: 750000, rentLand: 22000, rentVilla: 330000, rentBuilding: 800000, rentHotel: 1150000 },
+            '리스본': { land: 260000, villa: 150000, building: 450000, hotel: 750000, rentLand: 22000, rentVilla: 330000, rentBuilding: 800000, rentHotel: 1150000 },
+            '퀸엘리자베스': { land: 300000, special: true, rent: 250000 },
+            '마드리드': { land: 280000, villa: 150000, building: 450000, hotel: 750000, rentLand: 24000, rentVilla: 360000, rentBuilding: 850000, rentHotel: 1200000 },
+            '도쿄': { land: 300000, villa: 200000, building: 600000, hotel: 1000000, rentLand: 26000, rentVilla: 390000, rentBuilding: 900000, rentHotel: 1270000 },
+            '컬럼비아': { land: 450000, special: true, rent: 300000 },
+            '파리': { land: 320000, villa: 200000, building: 600000, hotel: 1000000, rentLand: 28000, rentVilla: 450000, rentBuilding: 1000000, rentHotel: 1400000 },
+            '로마': { land: 320000, villa: 200000, building: 600000, hotel: 1000000, rentLand: 28000, rentVilla: 450000, rentBuilding: 1000000, rentHotel: 1400000 },
+            '런던': { land: 350000, villa: 200000, building: 600000, hotel: 1000000, rentLand: 35000, rentVilla: 500000, rentBuilding: 1100000, rentHotel: 1500000 },
+            '뉴욕': { land: 350000, villa: 200000, building: 600000, hotel: 1000000, rentLand: 35000, rentVilla: 500000, rentBuilding: 1100000, rentHotel: 1500000 },
+            '서울': { land: 1000000, special: true, rent: 2000000 }
         };
 
-        const playerColors = ['#3498db', '#e74c3c', '#2ecc71', '#f39c12'];
-        const playerNames = ['나', 'CPU 1', 'CPU 2', 'CPU 3'];
+        const goldenKeys = [
+            { text: '가장 비싼 땅을 반값으로 은행에 판다', type: 'sell_expensive' },
+            { text: '건물 유지비 지불 (호텔 15만/빌딩 10만/별장 3만)', type: 'maintain' },
+            { text: '건물 수리비 지불 (호텔 10만/빌딩 6만/별장 3만)', type: 'repair' },
+            { text: '방범비 지불 (호텔 5만/빌딩 3만/별장 1만)', type: 'security' },
+            { text: '무인도 탈출 카드', type: 'escape', keep: true },
+            { text: '통행료 면제권 (1회)', type: 'immunity', keep: true },
+            { text: '뒤로 2칸 이동', type: 'back', steps: 2 },
+            { text: '뒤로 3칸 이동', type: 'back', steps: 3 },
+            { text: '제주도로 가시오', type: 'move', target: '제주도' },
+            { text: '부산으로 가시오', type: 'move', target: '부산' },
+            { text: '서울로 가시오', type: 'move', target: '서울' },
+            { text: '무인도로 가시오', type: 'move', target: '무인도' },
+            { text: '비행기로 가시오 (월급 20만원 받음)', type: 'move', target: '비행기', salary: true },
+            { text: '출발지로 가시오 (월급 20만원 받음)', type: 'move', target: '출발', salary: true },
+            { text: '생일 축하금 50만원', type: 'money', amount: 500000 },
+            { text: '노벨평화상 30만원', type: 'money', amount: 300000 },
+            { text: '복권 당첨 20만원', type: 'money', amount: 200000 },
+            { text: '과속운전 벌금 5만원', type: 'pay', amount: 50000 },
+            { text: '해외유학 비용 10만원', type: 'pay', amount: 100000 },
+            { text: '상대방 건물 파괴권', type: 'destroy', keep: true }
+        ];
 
         let gameState = {
             players: [],
             currentPlayer: 0,
-            isRolling: false,
-            islandTurns: {}
+            turn: 1,
+            goldenKeyDeck: [],
+            olympicCity: null,
+            airplaneNext: null
         };
 
         function initGame() {
-            gameState.players = playerNames.map((name, i) => ({
+            gameState.players = ['나', 'CPU 1', 'CPU 2', 'CPU 3'].map((name, i) => ({
                 name,
-                color: playerColors[i],
-                money: 3000000,
+                color: ['#3498db', '#e74c3c', '#2ecc71', '#f39c12'][i],
+                money: 2000000,
                 position: 0,
                 properties: [],
+                laps: 0,
                 isAI: i > 0,
-                isOnIsland: false
+                bankrupt: false,
+                isOnIsland: 0,
+                cards: { escape: 0, immunity: 0, destroy: 0 }
             }));
-
+            
+            gameState.goldenKeyDeck = shuffleArray([...goldenKeys, ...goldenKeys, ...goldenKeys]);
             createBoard();
-            updatePlayerInfo();
-            addLog('게임 시작! 출발 지점에서 시작합니다.');
+            updateAll();
+            addLog('🎮 게임 시작! 각 플레이어는 200만원을 받았습니다.');
+        }
+
+        function shuffleArray(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
         }
 
         function createBoard() {
             const board = document.getElementById('gameBoard');
-            const boardCells = [];
+            const positions = [];
             
-            // 하단 (0-7)
-            for (let i = 0; i <= 7; i++) {
-                boardCells.push({ pos: i, row: 11, col: i + 1 });
+            // 좌하단(출발0) → 우하단(이스탄불9): 하단 라인
+            for (let i = 0; i < 10; i++) {
+                positions.push({ pos: i, row: 13, col: i + 1 });
             }
             
-            // 우측 (8-14)
-            for (let i = 1; i <= 7; i++) {
-                boardCells.push({ pos: 7 + i, row: 11 - i, col: 9 });
+            // 우하단(이스탄불9) 다음 무인도(10) 시작
+            // 무인도(10) → 올림픽(20): 우측 라인
+            for (let i = 10; i <= 20; i++) {
+                positions.push({ pos: i, row: 13 - (i - 10), col: 11 });
             }
             
-            // 상단 (15-22)
-            for (let i = 1; i <= 8; i++) {
-                boardCells.push({ pos: 14 + i, row: 4, col: 9 - i });
+            // 올림픽(20) → 비행기(30): 상단 라인
+            for (let i = 21; i <= 30; i++) {
+                positions.push({ pos: i, row: 4, col: 11 - (i - 20) });
             }
             
-            // 좌측 (23-30)
-            for (let i = 1; i <= 8; i++) {
-                boardCells.push({ pos: 22 + i, row: 4 + i, col: 1 });
+            // 비행기(30) → 서울(39): 좌측 라인
+            for (let i = 31; i <= 39; i++) {
+                positions.push({ pos: i, row: 4 + (i - 30), col: 1 });
             }
 
-            boardCells.forEach(cell => {
+            positions.forEach(cell => {
                 const cellDiv = document.createElement('div');
                 cellDiv.className = 'cell';
+                const cityName = boardLayout[cell.pos];
+                
+                if (['출발', '무인도', '올림픽', '비행기'].includes(cityName)) {
+                    cellDiv.classList.add('corner');
+                } else if (cityName === '황금열쇠') {
+                    cellDiv.classList.add('golden');
+                } else if (['제주도', '콩코드', '부산', '퀸엘리자베스', '컬럼비아'].includes(cityName)) {
+                    cellDiv.classList.add('special');
+                } else if (cityData[cityName]) {
+                    cellDiv.classList.add('city');
+                }
+                
                 cellDiv.style.gridRow = cell.row;
                 cellDiv.style.gridColumn = cell.col;
                 cellDiv.dataset.position = cell.pos;
                 
-                const cityName = cities[cell.pos];
-                
-                if (cityName === '출발' || cityName === '무인도' || cityName === '비행기' || cityName === '월급') {
-                    cellDiv.classList.add('corner');
-                } else if (cityPrices[cityName]) {
-                    cellDiv.classList.add('city');
-                }
-                
+                const price = cityData[cityName] ? (cityData[cityName].land / 10000) + '만' : '';
                 cellDiv.innerHTML = `
                     <div class="cell-name">${cityName}</div>
-                    ${cityPrices[cityName] ? `<div class="cell-price">${(cityPrices[cityName]/10000).toFixed(0)}만</div>` : ''}
-                    <div class="building-indicator" data-buildings=""></div>
+                    ${price ? `<div class="cell-price">${price}</div>` : ''}
+                    <div class="building-indicator"></div>
                     <div class="players"></div>
                 `;
                 
                 board.appendChild(cellDiv);
             });
-
+            
             updatePlayerPositions();
         }
 
         function updatePlayerPositions() {
             document.querySelectorAll('.players').forEach(el => el.innerHTML = '');
             
-            gameState.players.forEach((player, i) => {
+            gameState.players.forEach(player => {
+                if (player.bankrupt) return;
                 const cell = document.querySelector(`[data-position="${player.position}"]`);
                 if (cell) {
-                    const playerPiece = document.createElement('div');
-                    playerPiece.className = 'player-piece';
-                    playerPiece.style.background = player.color;
-                    cell.querySelector('.players').appendChild(playerPiece);
+                    const piece = document.createElement('div');
+                    piece.className = 'player-piece';
+                    piece.style.background = player.color;
+                    cell.querySelector('.players').appendChild(piece);
                 }
             });
         }
 
+        function updateAll() {
+            updatePlayerInfo();
+            updatePlayerPositions();
+            document.getElementById('turnCount').textContent = gameState.turn;
+            document.getElementById('lapCount').textContent = gameState.players[gameState.currentPlayer].laps;
+        }
+
         function updatePlayerInfo() {
-            const container = document.getElementById('playerInfo');
-            container.innerHTML = gameState.players.map((player, i) => `
-                <div class="player-card ${i === gameState.currentPlayer ? 'active' : ''}">
+            document.getElementById('playerInfo').innerHTML = gameState.players.map((p, i) => `
+                <div class="player-card ${i === gameState.currentPlayer ? 'active' : ''} ${p.bankrupt ? 'bankrupt' : ''}">
                     <div class="player-header">
-                        <div class="player-color" style="background: ${player.color}"></div>
-                        <div class="player-name">${player.name}</div>
+                        <div class="player-color" style="background: ${p.color}"></div>
+                        <div class="player-name">${p.name}${p.bankrupt ? ' (파산)' : ''}</div>
                     </div>
-                    <div class="player-money">💰 ${player.money.toLocaleString()}원</div>
-                    <div class="player-properties">보유 도시: ${player.properties.length}개</div>
-                    ${player.isOnIsland ? '<div style="color: red; font-weight: bold;">🏝️ 무인도</div>' : ''}
+                    <div class="player-money">💰 ${p.money.toLocaleString()}원</div>
+                    <div class="player-properties">
+                        도시: ${p.properties.length}개 | 바퀴: ${p.laps}<br>
+                        ${p.cards.escape > 0 ? `🔑 탈출: ${p.cards.escape} ` : ''}
+                        ${p.cards.immunity > 0 ? `🎫 면제: ${p.cards.immunity} ` : ''}
+                        ${p.cards.destroy > 0 ? `💥 파괴: ${p.cards.destroy}` : ''}
+                        ${p.isOnIsland > 0 ? `<br>🏝️ 무인도 ${p.isOnIsland}턴째` : ''}
+                    </div>
                 </div>
             `).join('');
         }
 
         function rollDice() {
-            if (gameState.isRolling) return;
+            const player = gameState.players[gameState.currentPlayer];
+            if (player.bankrupt) { nextTurn(); return; }
             
-            const currentPlayer = gameState.players[gameState.currentPlayer];
-            
-            if (currentPlayer.isOnIsland) {
-                const turns = gameState.islandTurns[gameState.currentPlayer] || 0;
-                if (turns < 3) {
-                    gameState.islandTurns[gameState.currentPlayer] = turns + 1;
-                    addLog(`${currentPlayer.name}은(는) 무인도에서 ${turns + 1}턴째 대기 중...`);
-                    if (turns + 1 >= 3) {
-                        currentPlayer.isOnIsland = false;
-                        delete gameState.islandTurns[gameState.currentPlayer];
-                        addLog(`${currentPlayer.name}이(가) 무인도에서 탈출했습니다!`);
-                    }
-                    nextTurn();
-                    return;
-                }
+            if (gameState.airplaneNext === gameState.currentPlayer) {
+                showAirplaneChoice();
+                return;
             }
             
-            gameState.isRolling = true;
-            document.getElementById('rollButton').disabled = true;
+            if (player.isOnIsland > 0) {
+                handleIsland();
+                return;
+            }
             
+            document.getElementById('rollButton').disabled = true;
             const dice1El = document.getElementById('dice1');
             const dice2El = document.getElementById('dice2');
             
@@ -523,213 +718,763 @@
             setTimeout(() => {
                 const dice1 = Math.floor(Math.random() * 6) + 1;
                 const dice2 = Math.floor(Math.random() * 6) + 1;
-                const total = dice1 + dice2;
                 
                 dice1El.textContent = dice1;
                 dice2El.textContent = dice2;
                 dice1El.classList.remove('rolling');
                 dice2El.classList.remove('rolling');
                 
-                addLog(`${currentPlayer.name}이(가) ${dice1} + ${dice2} = ${total}을(를)굴렸습니다.`);
+                const isDouble = dice1 === dice2;
+                addLog(`${player.name}: ${dice1} + ${dice2} = ${dice1 + dice2}${isDouble ? ' 🎲더블!' : ''}`);
+                if (isDouble) {
+                    showNotification(`🎲 더블!\n${player.name}`);
+                }
                 
-                movePlayer(total);
+                movePlayer(dice1 + dice2, isDouble);
             }, 500);
         }
 
-        function movePlayer(steps) {
+        function handleIsland() {
+            const player = gameState.players[gameState.currentPlayer];
+            
+            if (player.cards.escape > 0) {
+                showModal('무인도', '탈출 카드를 사용하시겠습니까?', [
+                    { text: '사용', class: 'btn-buy', action: () => {
+                        player.cards.escape--;
+                        player.isOnIsland = 0;
+                        addLog(`${player.name}이(가) 탈출 카드 사용!`);
+                        closeModal();
+                        updateAll();
+                        setTimeout(rollDice, 500);
+                    }},
+                    { text: '주사위', class: 'btn-pass', action: () => {
+                        closeModal();
+                        tryIslandDice();
+                    }}
+                ]);
+                return;
+            }
+            
+            tryIslandDice();
+        }
+
+        function tryIslandDice() {
+            const player = gameState.players[gameState.currentPlayer];
+            const dice1 = Math.floor(Math.random() * 6) + 1;
+            const dice2 = Math.floor(Math.random() * 6) + 1;
+            
+            document.getElementById('dice1').textContent = dice1;
+            document.getElementById('dice2').textContent = dice2;
+            
+            if (dice1 === dice2) {
+                player.isOnIsland = 0;
+                addLog(`${player.name} 더블로 탈출! 🎲`);
+                movePlayer(dice1 + dice2, false);
+            } else {
+                player.isOnIsland++;
+                if (player.isOnIsland >= 3) {
+                    player.isOnIsland = 0;
+                    addLog(`${player.name} 3턴 후 자동 탈출`);
+                } else {
+                    addLog(`${player.name} 무인도 ${player.isOnIsland}턴째...`);
+                }
+                updateAll();
+                nextTurn();
+            }
+        }
+
+        function movePlayer(steps, isDouble) {
             const player = gameState.players[gameState.currentPlayer];
             const oldPos = player.position;
-            player.position = (player.position + steps) % 32;
+            player.position = (player.position + steps) % 40;
             
             if (player.position < oldPos) {
+                player.laps++;
                 player.money += 200000;
-                addLog(`${player.name}이(가) 출발점을 지나 월급 20만원을 받았습니다!`);
+                addLog(`${player.name} 출발 통과! 월급 20만원 💰`);
             }
             
             updatePlayerPositions();
-            
-            setTimeout(() => {
-                handleLanding();
-            }, 500);
+            setTimeout(() => handleLanding(isDouble), 600);
         }
 
-        function handleLanding() {
+        function handleLanding(isDouble) {
             const player = gameState.players[gameState.currentPlayer];
-            const cityName = cities[player.position];
+            const cityName = boardLayout[player.position];
             
-            if (cityName === '무인도') {
-                player.isOnIsland = true;
-                gameState.islandTurns[gameState.currentPlayer] = 0;
-                addLog(`${player.name}이(가) 무인도에 갇혔습니다! 3턴 대기...`);
-                updatePlayerInfo();
+            if (cityName === '황금열쇠') {
+                handleGoldenKey(isDouble);
+            } else if (cityName === '무인도') {
+                player.isOnIsland = 1;
+                addLog(`${player.name} 무인도 갇힘! 🏝️`);
+                updateAll();
                 nextTurn();
+            } else if (cityName === '올림픽') {
+                handleOlympic(isDouble);
+            } else if (cityName === '비행기') {
+                gameState.airplaneNext = gameState.currentPlayer;
+                addLog(`${player.name} 비행기 탑승! ✈️ 다음 턴에 원하는 곳으로`);
+                nextTurn();
+            } else if (cityData[cityName]) {
+                handleCity(cityName, isDouble);
+            } else {
+                if (isDouble) setTimeout(rollDice, 800);
+                else nextTurn();
+            }
+        }
+
+        function handleGoldenKey(isDouble) {
+            const player = gameState.players[gameState.currentPlayer];
+            const card = gameState.goldenKeyDeck.shift();
+            gameState.goldenKeyDeck.push(card);
+            
+            addLog(`🔑 ${player.name}: ${card.text}`);
+            showNotification(`${player.name}\n🔑 황금열쇠\n${card.text}`);
+            
+            if (card.keep) {
+                if (card.type === 'escape') player.cards.escape++;
+                if (card.type === 'immunity') player.cards.immunity++;
+                if (card.type === 'destroy') player.cards.destroy++;
+                updateAll();
+                if (isDouble) setTimeout(rollDice, 2000);
+                else setTimeout(nextTurn, 2000);
                 return;
             }
             
-            if (cityName === '비행기') {
-                const randomPos = Math.floor(Math.random() * 32);
-                player.position = randomPos;
-                addLog(`${player.name}이(가) 비행기를 타고 ${cities[randomPos]}(으)로 이동했습니다!`);
+            if (card.type === 'money') {
+                player.money += card.amount;
+            } else if (card.type === 'pay') {
+                player.money -= card.amount;
+            } else if (card.type === 'maintain') {
+                let cost = 0;
+                player.properties.forEach(p => {
+                    if (p.villa) cost += 30000;
+                    if (p.building) cost += 100000;
+                    if (p.hotel) cost += 150000;
+                });
+                player.money -= cost;
+                addLog(`유지비 ${cost.toLocaleString()}원 지불`);
+            } else if (card.type === 'repair') {
+                let cost = 0;
+                player.properties.forEach(p => {
+                    if (p.villa) cost += 30000;
+                    if (p.building) cost += 60000;
+                    if (p.hotel) cost += 100000;
+                });
+                player.money -= cost;
+                addLog(`수리비 ${cost.toLocaleString()}원 지불`);
+            } else if (card.type === 'security') {
+                let cost = 0;
+                player.properties.forEach(p => {
+                    if (p.villa) cost += 10000;
+                    if (p.building) cost += 30000;
+                    if (p.hotel) cost += 50000;
+                });
+                player.money -= cost;
+                addLog(`방범비 ${cost.toLocaleString()}원 지불`);
+            } else if (card.type === 'sell_expensive') {
+                const sorted = player.properties.sort((a,b) => cityData[b.name].land - cityData[a.name].land);
+                if (sorted[0]) {
+                    const prop = sorted[0];
+                    let sellPrice = cityData[prop.name].land / 2;
+                    if (prop.villa) sellPrice += cityData[prop.name].villa / 2;
+                    if (prop.building) sellPrice += cityData[prop.name].building / 2;
+                    if (prop.hotel) sellPrice += cityData[prop.name].hotel / 2;
+                    player.money += sellPrice;
+                    player.properties = player.properties.filter(p => p !== prop);
+                    addLog(`${prop.name} 반값 매각: ${sellPrice.toLocaleString()}원`);
+                    updateCityDisplay(prop.name, null);
+                }
+            } else if (card.type === 'back') {
+                player.position = Math.max(0, player.position - card.steps);
                 updatePlayerPositions();
-                setTimeout(() => handleLanding(), 1000);
+                setTimeout(() => handleLanding(false), 2600);
+                return;
+            } else if (card.type === 'move') {
+                const targetPos = boardLayout.indexOf(card.target);
+                if (card.salary && targetPos < player.position) {
+                    player.money += 200000;
+                    addLog(`월급 20만원 받음`);
+                }
+                player.position = targetPos;
+                updatePlayerPositions();
+                setTimeout(() => handleLanding(false), 2600);
                 return;
             }
             
-            if (cityName === '월급') {
-                player.money += 200000;
-                addLog(`${player.name}이(가) 보너스 월급 20만원을 받았습니다!`);
-                nextTurn();
-                return;
-            }
+            updateAll();
+            if (isDouble) setTimeout(rollDice, 2500);
+            else setTimeout(nextTurn, 2500);
+        }
+
+        function handleCity(cityName, isDouble) {
+            const player = gameState.players[gameState.currentPlayer];
+            const owner = gameState.players.find(p => p.properties.some(pr => pr.name === cityName));
             
-            if (cityPrices[cityName]) {
-                const owner = gameState.players.find(p => p.properties.some(prop => prop.name === cityName));
-                
-                if (!owner) {
-                    if (player.isAI) {
-                        setTimeout(() => handleAIDecision(cityName), 1000);
-                    } else {
-                        showBuyModal(cityName);
-                    }
-                } else if (owner !== player) {
-                    const rent = calculateRent(cityName, owner);
-                    player.money -= rent;
-                    owner.money += rent;
-                    addLog(`${player.name}이(가) ${owner.name}에게 통행료 ${rent.toLocaleString()}원을 지불했습니다.`);
-                    updatePlayerInfo();
-                    nextTurn();
+            if (!owner) {
+                if (player.isAI) {
+                    setTimeout(() => {
+                        if (player.money > cityData[cityName].land * 2 && Math.random() > 0.3) {
+                            buyCity(cityName, isDouble);
+                        } else {
+                            if (isDouble) setTimeout(rollDice, 500);
+                            else nextTurn();
+                        }
+                    }, 1000);
                 } else {
-                    if (player.isAI) {
-                        setTimeout(() => handleAIBuildDecision(cityName), 1000);
-                    } else {
-                        showBuildModal(cityName);
-                    }
+                    showBuyModal(cityName, isDouble);
+                }
+            } else if (owner === player) {
+                if (player.isAI) {
+                    setTimeout(() => aiBuild(cityName, isDouble), 1000);
+                } else {
+                    showBuildModal(cityName, isDouble);
                 }
             } else {
-                nextTurn();
+                payRent(cityName, owner, isDouble);
             }
         }
 
-        function calculateRent(cityName, owner) {
-            const prop = owner.properties.find(p => p.name === cityName);
-            const baseRent = cityPrices[cityName] * 0.1;
-            const buildingBonus = prop.buildings * baseRent * 0.5;
-            return Math.floor(baseRent + buildingBonus);
+        function showBuyModal(cityName, isDouble) {
+            const data = cityData[cityName];
+            const price = data.land;
+            
+            showModal(`${cityName} 구매`, `가격: ${price.toLocaleString()}원`, [
+                { text: '구매', class: 'btn-buy', action: () => { buyCity(cityName, isDouble); }},
+                { text: '포기', class: 'btn-pass', action: () => { 
+                    closeModal();
+                    if (isDouble) setTimeout(rollDice, 500);
+                    else nextTurn();
+                }}
+            ]);
         }
 
-        function showBuyModal(cityName) {
-            const modal = document.getElementById('actionModal');
-            const price = cityPrices[cityName];
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification-banner';
+            notification.textContent = message;
+            document.body.appendChild(notification);
             
-            document.getElementById('modalTitle').textContent = `${cityName} 구매`;
-            document.getElementById('modalText').textContent = `가격: ${price.toLocaleString()}원`;
-            document.getElementById('modalButtons').innerHTML = `
-                <button class="modal-button btn-buy" onclick="buyCity('${cityName}')">구매</button>
-                <button class="modal-button btn-pass" onclick="closeModal()">포기</button>
-            `;
-            
-            modal.classList.add('active');
+            setTimeout(() => {
+                notification.remove();
+            }, 2000);
         }
 
-        function showBuildModal(cityName) {
-            const modal = document.getElementById('actionModal');
-            const buildPrice = cityPrices[cityName] * 0.3;
-            
-            document.getElementById('modalTitle').textContent = `${cityName} 건물 짓기`;
-            document.getElementById('modalText').textContent = `건물 가격: ${buildPrice.toLocaleString()}원`;
-            document.getElementById('modalButtons').innerHTML = `
-                <button class="modal-button btn-build" onclick="buildOnCity('${cityName}')">건설</button>
-                <button class="modal-button btn-pass" onclick="closeModal()">다음에</button>
-            `;
-            
-            modal.classList.add('active');
-        }
-
-        function buyCity(cityName) {
+        function buyCity(cityName, isDouble) {
             const player = gameState.players[gameState.currentPlayer];
-            const price = cityPrices[cityName];
+            const price = cityData[cityName].land;
             
             if (player.money >= price) {
                 player.money -= price;
-                player.properties.push({ name: cityName, buildings: 0 });
-                addLog(`${player.name}이(가) ${cityName}을(를) ${price.toLocaleString()}원에 구매했습니다!`);
-                updateCityOwner(cityName, player);
-                updatePlayerInfo();
+                player.properties.push({ 
+                    name: cityName, 
+                    villa: false, 
+                    building: false, 
+                    hotel: false, 
+                    landmark: false 
+                });
+                addLog(`${player.name} ${cityName} 구매!`);
+                showNotification(`${player.name}\n${cityName} 구매!`);
+                updateCityDisplay(cityName, player);
+                updateAll();
             }
             
             closeModal();
-            nextTurn();
+            if (isDouble) setTimeout(rollDice, 2000);
+            else setTimeout(nextTurn, 2000);
         }
 
-        function buildOnCity(cityName) {
+        function showBuildModal(cityName, isDouble) {
             const player = gameState.players[gameState.currentPlayer];
             const prop = player.properties.find(p => p.name === cityName);
-            const buildPrice = Math.floor(cityPrices[cityName] * 0.3);
+            const data = cityData[cityName];
             
-            if (prop && prop.buildings < 3 && player.money >= buildPrice) {
-                player.money -= buildPrice;
-                prop.buildings++;
-                addLog(`${player.name}이(가) ${cityName}에 건물을 지었습니다! (${prop.buildings}/3)`);
-                updateBuildingDisplay(cityName, prop.buildings);
-                updatePlayerInfo();
+            if (data.special) {
+                if (isDouble) setTimeout(rollDice, 500);
+                else nextTurn();
+                return;
+            }
+            
+            const maxBuildings = Math.min(3, player.laps);
+            const buttons = [];
+            let info = `건물: ${prop.villa?'별장 ':''}${prop.building?'빌딩 ':''}${prop.hotel?'호텔 ':''}`;
+            
+            if (!prop.villa && maxBuildings >= 1) {
+                buttons.push({ text: `별장 짓기 (${(data.villa/10000)}만)`, class: 'btn-build', 
+                    action: () => { build(cityName, 'villa', isDouble); }});
+            }
+            if (prop.villa && !prop.building && maxBuildings >= 2) {
+                buttons.push({ text: `빌딩 짓기 (${(data.building/10000)}만)`, class: 'btn-build', 
+                    action: () => { build(cityName, 'building', isDouble); }});
+            }
+            if (prop.building && !prop.hotel && maxBuildings >= 3) {
+                buttons.push({ text: `호텔 짓기 (${(data.hotel/10000)}만)`, class: 'btn-build', 
+                    action: () => { build(cityName, 'hotel', isDouble); }});
+            }
+            if (prop.villa && prop.building && prop.hotel && !prop.landmark) {
+                const landmarkPrice = data.hotel * 2;
+                buttons.push({ text: `랜드마크 건설 (${(landmarkPrice/10000)}만)`, class: 'btn-buy', 
+                    action: () => { buildLandmark(cityName, isDouble); }});
+            }
+            
+            buttons.push({ text: '다음에', class: 'btn-pass', action: () => { 
+                closeModal();
+                if (isDouble) setTimeout(rollDice, 500);
+                else nextTurn();
+            }});
+            
+            showModal(`${cityName} 건설`, info, buttons);
+        }
+
+        function build(cityName, type, isDouble) {
+            const player = gameState.players[gameState.currentPlayer];
+            const prop = player.properties.find(p => p.name === cityName);
+            const data = cityData[cityName];
+            const price = data[type];
+            
+            if (player.money >= price) {
+                player.money -= price;
+                prop[type] = true;
+                const typeName = type==='villa'?'별장':type==='building'?'빌딩':'호텔';
+                addLog(`${player.name} ${cityName}에 ${typeName} 건설!`);
+                showNotification(`${player.name}\n${cityName} ${typeName} 구매!`);
+                updateCityDisplay(cityName, player);
+                updateAll();
             }
             
             closeModal();
-            nextTurn();
+            if (isDouble) setTimeout(rollDice, 2000);
+            else setTimeout(nextTurn, 2000);
         }
 
-        function updateCityOwner(cityName, player) {
-            const cell = Array.from(document.querySelectorAll('.cell')).find(c => 
-                c.querySelector('.cell-name').textContent === cityName
-            );
-            if (cell) {
-                let owner = cell.querySelector('.cell-owner');
-                if (!owner) {
-                    owner = document.createElement('div');
-                    owner.className = 'cell-owner';
-                    cell.appendChild(owner);
-                }
-                owner.style.background = player.color;
-            }
-        }
-
-        function updateBuildingDisplay(cityName, count) {
-            const cell = Array.from(document.querySelectorAll('.cell')).find(c => 
-                c.querySelector('.cell-name').textContent === cityName
-            );
-            if (cell) {
-                const indicator = cell.querySelector('.building-indicator');
-                indicator.innerHTML = '';
-                for (let i = 0; i < count; i++) {
-                    const building = document.createElement('div');
-                    building.className = i === 2 ? 'hotel' : 'building';
-                    indicator.appendChild(building);
-                }
-            }
-        }
-
-        function handleAIDecision(cityName) {
-            const player = gameState.players[gameState.currentPlayer];
-            const price = cityPrices[cityName];
-            
-            if (player.money >= price && Math.random() > 0.3) {
-                buyCity(cityName);
-            } else {
-                addLog(`${player.name}이(가) ${cityName} 구매를 포기했습니다.`);
-                nextTurn();
-            }
-        }
-
-        function handleAIBuildDecision(cityName) {
+        function buildLandmark(cityName, isDouble) {
             const player = gameState.players[gameState.currentPlayer];
             const prop = player.properties.find(p => p.name === cityName);
-            const buildPrice = Math.floor(cityPrices[cityName] * 0.3);
+            const price = cityData[cityName].hotel * 2;
             
-            if (prop && prop.buildings < 3 && player.money >= buildPrice * 2 && Math.random() > 0.4) {
-                buildOnCity(cityName);
-            } else {
-                nextTurn();
+            if (player.money >= price) {
+                player.money -= price;
+                prop.landmark = true;
+                showLandmarkEffect();
+                addLog(`🌟 ${player.name} ${cityName} 랜드마크 완성!`);
+                updateCityDisplay(cityName, player);
+                updateAll();
             }
+            
+            closeModal();
+            if (isDouble) setTimeout(rollDice, 800);
+            else nextTurn();
+        }
+
+        function payRent(cityName, owner, isDouble) {
+            const player = gameState.players[gameState.currentPlayer];
+            const prop = owner.properties.find(p => p.name === cityName);
+            const data = cityData[cityName];
+            
+            let rent = 0;
+            if (data.special) {
+                rent = data.rent;
+            } else {
+                if (prop.landmark) {
+                    rent = data.rentHotel * 2;
+                } else if (prop.hotel) {
+                    rent = data.rentHotel;
+                } else if (prop.building) {
+                    rent = data.rentBuilding;
+                } else if (prop.villa) {
+                    rent = data.rentVilla;
+                } else {
+                    rent = data.rentLand;
+                }
+            }
+            
+            if (gameState.olympicCity === cityName) {
+                rent *= 3;
+                addLog(`🏅 올림픽 개최 도시! 통행료 3배`);
+            }
+            
+            if (player.cards.immunity > 0 && !player.isAI) {
+                showModal('면제권 사용', '통행료 면제권을 사용하시겠습니까?', [
+                    { text: '사용', class: 'btn-buy', action: () => {
+                        player.cards.immunity--;
+                        addLog(`${player.name} 면제권 사용!`);
+                        closeModal();
+                        updateAll();
+                        if (isDouble) setTimeout(rollDice, 500);
+                        else nextTurn();
+                    }},
+                    { text: '지불', class: 'btn-pass', action: () => {
+                        closeModal();
+                        executeRentPayment(rent, owner, isDouble, cityName, prop);
+                    }}
+                ]);
+                return;
+            }
+            
+            if (player.isAI && player.cards.immunity > 0 && rent > player.money * 0.3) {
+                player.cards.immunity--;
+                addLog(`${player.name} 면제권 사용!`);
+                updateAll();
+                if (isDouble) setTimeout(rollDice, 500);
+                else nextTurn();
+                return;
+            }
+            
+            executeRentPayment(rent, owner, isDouble, cityName, prop);
+        }
+
+        function executeRentPayment(rent, owner, isDouble, cityName, prop) {
+            const player = gameState.players[gameState.currentPlayer];
+            
+            if (player.money >= rent) {
+                player.money -= rent;
+                owner.money += rent;
+                addLog(`${player.name} → ${owner.name} 통행료 ${rent.toLocaleString()}원`);
+                showNotification(`${player.name} → ${owner.name}\n통행료 ${rent.toLocaleString()}원 지불`);
+                updateAll();
+                
+                // 랜드마크 없으면 구매 제안
+                if (!prop.landmark && !cityData[cityName].special) {
+                    const data = cityData[cityName];
+                    let buyPrice = data.land;
+                    if (prop.villa) buyPrice += data.villa;
+                    if (prop.building) buyPrice += data.building;
+                    if (prop.hotel) buyPrice += data.hotel;
+                    
+                    if (player.isAI) {
+                        if (player.money > buyPrice * 1.5 && Math.random() > 0.5) {
+                            setTimeout(() => buyFromOwner(cityName, owner, buyPrice, isDouble), 2000);
+                        } else {
+                            if (isDouble) setTimeout(rollDice, 2000);
+                            else setTimeout(nextTurn, 2000);
+                        }
+                    } else {
+                        setTimeout(() => {
+                            showModal('도시 구매', `${cityName}을(를) ${buyPrice.toLocaleString()}원에 구매하시겠습니까?`, [
+                                { text: '예', class: 'btn-buy', action: () => {
+                                    buyFromOwner(cityName, owner, buyPrice, isDouble);
+                                }},
+                                { text: '아니요', class: 'btn-pass', action: () => {
+                                    closeModal();
+                                    if (isDouble) setTimeout(rollDice, 500);
+                                    else nextTurn();
+                                }}
+                            ]);
+                        }, 2000);
+                    }
+                } else {
+                    if (isDouble) setTimeout(rollDice, 2000);
+                    else setTimeout(nextTurn, 2000);
+                }
+            } else {
+                handleBankruptcy(player, owner, rent, isDouble);
+            }
+        }
+
+        function buyFromOwner(cityName, owner, price, isDouble) {
+            const player = gameState.players[gameState.currentPlayer];
+            
+            if (player.money >= price) {
+                player.money -= price;
+                owner.money += price;
+                
+                const propIndex = owner.properties.findIndex(p => p.name === cityName);
+                const prop = owner.properties[propIndex];
+                owner.properties.splice(propIndex, 1);
+                player.properties.push(prop);
+                
+                addLog(`${player.name}이(가) ${owner.name}로부터 ${cityName} 구매!`);
+                showNotification(`${player.name}\n${cityName} 인수!`);
+                updateCityDisplay(cityName, player);
+                updateAll();
+            }
+            
+            closeModal();
+            if (isDouble) setTimeout(rollDice, 2000);
+            else setTimeout(nextTurn, 2000);
+        }
+
+        function handleBankruptcy(player, creditor, debt, isDouble) {
+            if (player.isAI && player.properties.length > 0) {
+                // AI 자동 매각
+                while (player.money < debt && player.properties.length > 0) {
+                    const prop = player.properties[0];
+                    const data = cityData[prop.name];
+                    let value = data.land;
+                    if (prop.villa) value += data.villa;
+                    if (prop.building) value += data.building;
+                    if (prop.hotel) value += data.hotel;
+                    if (prop.landmark) value += data.hotel * 2;
+                    
+                    player.money += value;
+                    player.properties.shift();
+                    updateCityDisplay(prop.name, null);
+                    addLog(`${player.name} ${prop.name} 매각: ${value.toLocaleString()}원`);
+                }
+                
+                if (player.money >= debt) {
+                    player.money -= debt;
+                    creditor.money += debt;
+                    addLog(`${player.name} → ${creditor.name} ${debt.toLocaleString()}원 지불`);
+                    updateAll();
+                    if (isDouble) setTimeout(rollDice, 1000);
+                    else nextTurn();
+                } else {
+                    player.bankrupt = true;
+                    addLog(`💀 ${player.name} 파산!`);
+                    checkGameEnd();
+                    if (isDouble) setTimeout(rollDice, 1000);
+                    else nextTurn();
+                }
+            } else if (player.properties.length > 0) {
+                showSellModal(player, debt, isDouble, creditor);
+            } else {
+                player.bankrupt = true;
+                addLog(`💀 ${player.name} 파산!`);
+                checkGameEnd();
+                if (isDouble) setTimeout(rollDice, 1000);
+                else nextTurn();
+            }
+        }
+
+        function showSellModal(player, minAmount, isDouble, creditor) {
+            const props = player.properties.map((p, i) => {
+                const data = cityData[p.name];
+                let value = data.land;
+                if (p.villa) value += data.villa;
+                if (p.building) value += data.building;
+                if (p.hotel) value += data.hotel;
+                if (p.landmark) value += data.hotel * 2;
+                return { ...p, value, index: i };
+            });
+            
+            let html = '<div class="property-list">';
+            props.forEach((p, i) => {
+                html += `<div class="property-item" onclick="sellProperty(${i}, ${isDouble}, ${minAmount}, '${creditor ? creditor.name : ''}')">${p.name} - ${p.value.toLocaleString()}원</div>`;
+            });
+            html += '</div>';
+            
+            showModal('재산 매각', `${minAmount.toLocaleString()}원 필요 (현재: ${player.money.toLocaleString()}원)`, [], html);
+        }
+
+        window.sellProperty = function(index, isDouble, debt, creditorName) {
+            const player = gameState.players[gameState.currentPlayer];
+            const prop = player.properties[index];
+            const data = cityData[prop.name];
+            
+            let value = data.land;
+            if (prop.villa) value += data.villa;
+            if (prop.building) value += data.building;
+            if (prop.hotel) value += data.hotel;
+            if (prop.landmark) value += data.hotel * 2;
+            
+            player.money += value;
+            player.properties.splice(index, 1);
+            updateCityDisplay(prop.name, null);
+            addLog(`${prop.name} 매각: ${value.toLocaleString()}원`);
+            updateAll();
+            
+            if (player.money >= debt) {
+                const creditor = gameState.players.find(p => p.name === creditorName);
+                if (creditor) {
+                    player.money -= debt;
+                    creditor.money += debt;
+                    addLog(`${player.name} → ${creditor.name} ${debt.toLocaleString()}원 지불`);
+                }
+                closeModal();
+                updateAll();
+                if (isDouble) setTimeout(rollDice, 1000);
+                else nextTurn();
+            } else {
+                showSellModal(player, debt, isDouble, creditor);
+            }
+        };
+
+        function handleOlympic(isDouble) {
+            const player = gameState.players[gameState.currentPlayer];
+            const buildCities = player.properties.filter(p => p.villa || p.building || p.hotel);
+            
+            if (buildCities.length === 0) {
+                addLog(`${player.name} 건물 없어서 올림픽 개최 불가`);
+                if (isDouble) setTimeout(rollDice, 500);
+                else nextTurn();
+                return;
+            }
+            
+            if (player.isAI) {
+                const selected = buildCities[Math.floor(Math.random() * buildCities.length)];
+                setOlympic(selected.name, isDouble);
+            } else {
+                let html = '<div class="property-list">';
+                buildCities.forEach((p, i) => {
+                    html += `<div class="property-item" onclick="selectOlympic('${p.name}', ${isDouble})">${p.name}</div>`;
+                });
+                html += '</div>';
+                showModal('올림픽 개최', '도시를 선택하세요 (통행료 3배!)', [], html);
+            }
+        }
+
+        window.selectOlympic = function(cityName, isDouble) {
+            setOlympic(cityName, isDouble);
+        };
+
+        function setOlympic(cityName, isDouble) {
+            gameState.olympicCity = cityName;
+            addLog(`🏅 ${cityName}에서 올림픽 개최! 통행료 3배`);
+            closeModal();
+            if (isDouble) setTimeout(rollDice, 500);
+            else nextTurn();
+        }
+
+        function showAirplaneChoice() {
+            const player = gameState.players[gameState.currentPlayer];
+            
+            if (player.isAI) {
+                const targetPos = Math.floor(Math.random() * 40);
+                player.position = targetPos;
+                if (targetPos < gameState.players[gameState.currentPlayer].position) {
+                    player.money += 200000;
+                    addLog(`${player.name} 월급 20만원 받음`);
+                }
+                gameState.airplaneNext = null;
+                updatePlayerPositions();
+                setTimeout(() => handleLanding(false), 600);
+            } else {
+                let html = '<select id="citySelect" style="width:100%;padding:10px;margin:10px 0;">';
+                boardLayout.forEach((city, i) => {
+                    if (city !== '황금열쇠' && city !== '출발' && city !== '비행기') {
+                        html += `<option value="${i}">${city}</option>`;
+                    }
+                });
+                html += '</select>';
+                
+                showModal('비행기 이동', '원하는 도시를 선택하세요', [
+                    { text: '이동', class: 'btn-buy', action: () => {
+                        const select = document.getElementById('citySelect');
+                        const targetPos = parseInt(select.value);
+                        player.position = targetPos;
+                        if (targetPos < player.position) {
+                            player.money += 200000;
+                            addLog(`${player.name} 월급 20만원 받음`);
+                        }
+                        gameState.airplaneNext = null;
+                        closeModal();
+                        updatePlayerPositions();
+                        setTimeout(() => handleLanding(false), 600);
+                    }}
+                ], html);
+            }
+        }
+
+        function aiBuild(cityName, isDouble) {
+            const player = gameState.players[gameState.currentPlayer];
+            const prop = player.properties.find(p => p.name === cityName);
+            const data = cityData[cityName];
+            
+            if (data.special || player.laps === 0) {
+                if (isDouble) setTimeout(rollDice, 500);
+                else nextTurn();
+                return;
+            }
+            
+            if (prop.villa && prop.building && prop.hotel && !prop.landmark && player.money > data.hotel * 3) {
+                buildLandmark(cityName, isDouble);
+            } else if (!prop.villa && player.money > data.villa * 3 && Math.random() > 0.3) {
+                build(cityName, 'villa', isDouble);
+            } else if (prop.villa && !prop.building && player.laps >= 2 && player.money > data.building * 2.5 && Math.random() > 0.4) {
+                build(cityName, 'building', isDouble);
+            } else if (prop.building && !prop.hotel && player.laps >= 3 && player.money > data.hotel * 2 && Math.random() > 0.5) {
+                build(cityName, 'hotel', isDouble);
+            } else {
+                if (isDouble) setTimeout(rollDice, 500);
+                else nextTurn();
+            }
+        }
+
+        function updateCityDisplay(cityName, owner) {
+            const pos = boardLayout.indexOf(cityName);
+            const cell = document.querySelector(`[data-position="${pos}"]`);
+            if (!cell) return;
+            
+            let ownerEl = cell.querySelector('.cell-owner');
+            if (!ownerEl && owner) {
+                ownerEl = document.createElement('div');
+                ownerEl.className = 'cell-owner';
+                cell.appendChild(ownerEl);
+            }
+            
+            if (ownerEl) {
+                ownerEl.style.background = owner ? owner.color : 'transparent';
+                ownerEl.style.display = owner ? 'block' : 'none';
+            }
+            
+            const indicator = cell.querySelector('.building-indicator');
+            indicator.innerHTML = '';
+            
+            if (owner) {
+                const prop = owner.properties.find(p => p.name === cityName);
+                if (prop) {
+                    if (prop.villa) {
+                        const v = document.createElement('div');
+                        v.className = 'building villa';
+                        indicator.appendChild(v);
+                    }
+                    if (prop.building) {
+                        const b = document.createElement('div');
+                        b.className = 'building building-type';
+                        indicator.appendChild(b);
+                    }
+                    if (prop.hotel) {
+                        const h = document.createElement('div');
+                        h.className = 'building hotel';
+                        indicator.appendChild(h);
+                    }
+                    if (prop.landmark) {
+                        const l = document.createElement('div');
+                        l.className = 'landmark';
+                        indicator.appendChild(l);
+                    }
+                }
+            }
+            
+            if (gameState.olympicCity === cityName) {
+                let olympicEl = cell.querySelector('.olympic-marker');
+                if (!olympicEl) {
+                    olympicEl = document.createElement('div');
+                    olympicEl.className = 'olympic-marker';
+                    olympicEl.textContent = '🏅';
+                    cell.appendChild(olympicEl);
+                }
+            }
+        }
+
+        function showLandmarkEffect() {
+            const effect = document.createElement('div');
+            effect.className = 'landmark-effect';
+            effect.textContent = '⭐✨🌟💫';
+            effect.style.left = '50%';
+            effect.style.top = '50%';
+            document.body.appendChild(effect);
+            setTimeout(() => effect.remove(), 2000);
+        }
+
+        function showModal(title, text, buttons, extraHTML = '') {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalText').textContent = text;
+            document.getElementById('modalExtra').innerHTML = extraHTML;
+            
+            const modalButtons = document.getElementById('modalButtons');
+            modalButtons.innerHTML = '';
+            
+            buttons.forEach((btn, index) => {
+                const button = document.createElement('button');
+                button.className = `modal-button ${btn.class}`;
+                button.textContent = btn.text;
+                button.onclick = btn.action;
+                modalButtons.appendChild(button);
+            });
+            
+            document.getElementById('actionModal').classList.add('active');
         }
 
         function closeModal() {
@@ -737,33 +1482,80 @@
         }
 
         function nextTurn() {
-            gameState.isRolling = false;
-            gameState.currentPlayer = (gameState.currentPlayer + 1) % 4;
+            do {
+                gameState.currentPlayer = (gameState.currentPlayer + 1) % 4;
+                if (gameState.currentPlayer === 0) {
+                    gameState.turn++;
+                    if (gameState.turn > 30) {
+                        checkGameEnd();
+                        return;
+                    }
+                }
+            } while (gameState.players[gameState.currentPlayer].bankrupt);
+            
             document.getElementById('rollButton').disabled = false;
+            document.getElementById('currentTurn').textContent = `턴: ${gameState.players[gameState.currentPlayer].name}`;
+            updateAll();
             
-            const currentPlayer = gameState.players[gameState.currentPlayer];
-            document.getElementById('currentTurn').textContent = `턴: ${currentPlayer.name}`;
-            updatePlayerInfo();
-            
-            if (currentPlayer.isAI) {
-                setTimeout(() => rollDice(), 1500);
+            if (gameState.players[gameState.currentPlayer].isAI) {
+                setTimeout(rollDice, 1500);
             }
         }
 
-        function addLog(message) {
+        function checkGameEnd() {
+            const alive = gameState.players.filter(p => !p.bankrupt);
+            
+            if (alive.length === 1 || gameState.turn > 100) {
+                const sorted = gameState.players.slice().sort((a, b) => {
+                    let aTotal = a.money;
+                    let bTotal = b.money;
+                    a.properties.forEach(p => {
+                        const d = cityData[p.name];
+                        aTotal += d.land;
+                        if (p.villa) aTotal += d.villa;
+                        if (p.building) aTotal += d.building;
+                        if (p.hotel) aTotal += d.hotel;
+                        if (p.landmark) aTotal += d.hotel * 2;
+                    });
+                    b.properties.forEach(p => {
+                        const d = cityData[p.name];
+                        bTotal += d.land;
+                        if (p.villa) bTotal += d.villa;
+                        if (p.building) bTotal += d.building;
+                        if (p.hotel) bTotal += d.hotel;
+                        if (p.landmark) bTotal += d.hotel * 2;
+                    });
+                    return bTotal - aTotal;
+                });
+                
+                let totalAsset = sorted[0].money;
+                sorted[0].properties.forEach(p => {
+                    const d = cityData[p.name];
+                    totalAsset += d.land;
+                    if (p.villa) totalAsset += d.villa;
+                    if (p.building) totalAsset += d.building;
+                    if (p.hotel) totalAsset += d.hotel;
+                    if (p.landmark) totalAsset += d.hotel * 2;
+                });
+                
+                showModal('🎉 게임 종료!', `우승: ${sorted[0].name}\n총 자산: ${totalAsset.toLocaleString()}원`, [
+                    { text: '다시하기', class: 'btn-buy', action: () => {
+                        location.reload();
+                    }}
+                ]);
+            }
+        }
+
+        function addLog(msg) {
             const log = document.getElementById('logContainer');
             const entry = document.createElement('div');
             entry.className = 'log-entry';
-            entry.textContent = message;
+            entry.textContent = msg;
             log.insertBefore(entry, log.firstChild);
-            
-            if (log.children.length > 20) {
-                log.removeChild(log.lastChild);
-            }
+            if (log.children.length > 25) log.removeChild(log.lastChild);
         }
 
         document.getElementById('rollButton').addEventListener('click', rollDice);
-
         initGame();
     </script>
 </body>
