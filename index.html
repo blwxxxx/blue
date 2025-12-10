@@ -14,11 +14,35 @@
         body {
             font-family: 'Noto Sans KR', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
             min-height: 100vh;
             padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .game-controls {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .control-btn {
+            padding: 10px 20px;
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .control-btn:hover {
+            background: #667eea;
+            color: white;
         }
 
         .game-container {
@@ -329,9 +353,22 @@
             box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
         }
 
-        .player-card.bankrupt {
-            opacity: 0.5;
-            background: #f0f0f0;
+        .player-card:hover .player-color {
+            animation: pulse 0.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .cell.highlight {
+            animation: cellBlink 0.5s infinite;
+        }
+
+        @keyframes cellBlink {
+            0%, 100% { box-shadow: 0 0 0 rgba(0,0,0,0); }
+            50% { box-shadow: 0 0 20px currentColor; transform: scale(1.05); }
         }
 
         .player-header {
@@ -466,6 +503,12 @@
     </style>
 </head>
 <body>
+    <div class="game-controls">
+        <button class="control-btn" onclick="startGame()">게임 시작</button>
+        <button class="control-btn" onclick="endGame()">게임 종료</button>
+        <button class="control-btn" onclick="saveGame()">저장</button>
+    </div>
+    
     <div class="game-container">
         <h1>🌍 부루마블 (Blue Marble)</h1>
         <div class="game-info">턴: <span id="turnCount">1</span> / 100 | 바퀴: <span id="lapCount">0</span></div>
@@ -568,6 +611,20 @@
         };
 
         function initGame() {
+            // 저장된 게임 불러오기
+            const saved = localStorage.getItem('bluemarble_save');
+            if (saved) {
+                try {
+                    gameState = JSON.parse(saved);
+                    createBoard();
+                    updateAll();
+                    addLog('저장된 게임을 불러왔습니다.');
+                    return;
+                } catch (e) {
+                    console.error('저장 데이터 로드 실패:', e);
+                }
+            }
+            
             gameState.players = ['나', 'CPU 1', 'CPU 2', 'CPU 3'].map((name, i) => ({
                 name,
                 color: ['#3498db', '#e74c3c', '#2ecc71', '#f39c12'][i],
@@ -585,7 +642,31 @@
             createBoard();
             updateAll();
             addLog('🎮 게임 시작! 각 플레이어는 200만원을 받았습니다.');
+            saveGame();
         }
+
+        window.startGame = function() {
+            if (confirm('새 게임을 시작하시겠습니까?')) {
+                localStorage.removeItem('bluemarble_save');
+                location.reload();
+            }
+        };
+
+        window.endGame = function() {
+            if (confirm('게임을 종료하시겠습니까?')) {
+                localStorage.removeItem('bluemarble_save');
+                location.reload();
+            }
+        };
+
+        window.saveGame = function() {
+            try {
+                localStorage.setItem('bluemarble_save', JSON.stringify(gameState));
+                addLog('게임이 저장되었습니다.');
+            } catch (e) {
+                console.error('저장 실패:', e);
+            }
+        };
 
         function shuffleArray(arr) {
             for (let i = arr.length - 1; i > 0; i--) {
@@ -673,11 +754,14 @@
             updatePlayerPositions();
             document.getElementById('turnCount').textContent = gameState.turn;
             document.getElementById('lapCount').textContent = gameState.players[gameState.currentPlayer].laps;
+            saveGame();
         }
 
         function updatePlayerInfo() {
             document.getElementById('playerInfo').innerHTML = gameState.players.map((p, i) => `
-                <div class="player-card ${i === gameState.currentPlayer ? 'active' : ''} ${p.bankrupt ? 'bankrupt' : ''}">
+                <div class="player-card ${i === gameState.currentPlayer ? 'active' : ''} ${p.bankrupt ? 'bankrupt' : ''}" 
+                     onmouseenter="highlightProperties('${p.name}')" 
+                     onmouseleave="unhighlightProperties()">
                     <div class="player-header">
                         <div class="player-color" style="background: ${p.color}"></div>
                         <div class="player-name">${p.name}${p.bankrupt ? ' (파산)' : ''}</div>
@@ -693,6 +777,27 @@
                 </div>
             `).join('');
         }
+
+        window.highlightProperties = function(playerName) {
+            const player = gameState.players.find(p => p.name === playerName);
+            if (!player) return;
+            
+            player.properties.forEach(prop => {
+                const pos = boardLayout.indexOf(prop.name);
+                const cell = document.querySelector(`[data-position="${pos}"]`);
+                if (cell) {
+                    cell.classList.add('highlight');
+                    cell.style.color = player.color;
+                }
+            });
+        };
+
+        window.unhighlightProperties = function() {
+            document.querySelectorAll('.cell.highlight').forEach(cell => {
+                cell.classList.remove('highlight');
+                cell.style.color = '';
+            });
+        };
 
         function rollDice() {
             const player = gameState.players[gameState.currentPlayer];
@@ -915,7 +1020,10 @@
                 if (player.isAI) {
                     setTimeout(() => {
                         if (player.money > cityData[cityName].land * 2 && Math.random() > 0.3) {
-                            buyCity(cityName, isDouble);
+                            const buildLevel = player.laps >= 4 && Math.random() > 0.5 ? 'hotel' : 
+                                             player.laps >= 2 && Math.random() > 0.6 ? 'building' :
+                                             player.laps >= 1 && Math.random() > 0.7 ? 'villa' : 'land';
+                            buyCity(cityName, isDouble, buildLevel);
                         } else {
                             if (isDouble) setTimeout(rollDice, 500);
                             else nextTurn();
@@ -1187,11 +1295,34 @@
                 showNotification(`${player.name}\n${cityName} 인수!`);
                 updateCityDisplay(cityName, player);
                 updateAll();
+                saveGame();
+                
+                closeModal();
+                
+                // 추가 건설 여부 물어보기
+                const data = cityData[cityName];
+                if (!prop.landmark && player.laps >= 1) {
+                    setTimeout(() => {
+                        if (player.isAI) {
+                            if (player.money > data.hotel && Math.random() > 0.6) {
+                                aiBuild(cityName, isDouble);
+                            } else {
+                                if (isDouble) setTimeout(rollDice, 500);
+                                else nextTurn();
+                            }
+                        } else {
+                            showBuildModal(cityName, isDouble);
+                        }
+                    }, 1000);
+                } else {
+                    if (isDouble) setTimeout(rollDice, 2000);
+                    else setTimeout(nextTurn, 2000);
+                }
+            } else {
+                closeModal();
+                if (isDouble) setTimeout(rollDice, 2000);
+                else setTimeout(nextTurn, 2000);
             }
-            
-            closeModal();
-            if (isDouble) setTimeout(rollDice, 2000);
-            else setTimeout(nextTurn, 2000);
         }
 
         function handleBankruptcy(player, creditor, debt, isDouble) {
